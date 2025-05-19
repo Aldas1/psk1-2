@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+   <title>Edit Faculty</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         margin: 20px;
+         line-height: 1.6;
+      }
+      .container {
+         max-width: 1200px;
+         margin: 0 auto;
+      }
+      .header {
+         background-color: #3498db;
+         color: white;
+         padding: 15px;
+         margin-bottom: 20px;
+         border-radius: 5px;
+      }
+      .nav {
+         background-color: #f8f9fa;
+         padding: 10px;
+         margin-bottom: 20px;
+         border-radius: 5px;
+      }
+      .nav a {
+         margin-right: 15px;
+         text-decoration: none;
+         color: #3498db;
+      }
+      .form-group {
+         margin-bottom: 15px;
+      }
+      .form-group label {
+         display: block;
+         margin-bottom: 5px;
+         font-weight: bold;
+      }
+      .form-control {
+         width: 100%;
+         padding: 8px;
+         border: 1px solid #ddd;
+         border-radius: 4px;
+         box-sizing: border-box;
+      }
+      .btn {
+         display: inline-block;
+         padding: 8px 12px;
+         margin-right: 5px;
+         background-color: #3498db;
+         color: white;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         text-decoration: none;
+      }
+      .btn-secondary {
+         background-color: #95a5a6;
+      }
+   </style>
+</h:head>
+<h:body>
+   <div class="container">
+      <div class="header">
+         <h1>University Management System</h1>
+      </div>
+
+      <div class="nav">
+         <h:link value="Faculties" outcome="faculties" />
+         <h:link value="Courses" outcome="courses" />
+         <h:link value="Students" outcome="students" />
+      </div>
+
+      <h2>Edit Faculty</h2>
+
+      <h:form>
+         <div class="form-group">
+            <h:outputLabel for="id" value="ID:" />
+            <h:inputText id="id" value="#{facultyBean.selectedFaculty.id}" readonly="true" class="form-control" />
+         </div>
+
+         <div class="form-group">
+            <h:outputLabel for="name" value="Faculty Name:" />
+            <h:inputText id="name" value="#{facultyBean.selectedFaculty.name}" required="true" requiredMessage="Faculty name is required" class="form-control" />
+            <h:message for="name" style="color:red" />
+         </div>
+
+         <div class="form-group">
+            <h:outputLabel for="department" value="Department:" />
+            <h:inputText id="department" value="#{facultyBean.selectedFaculty.department}" class="form-control" />
+         </div>
+
+         <h:commandButton value="Update Faculty" action="#{facultyBean.updateFaculty}" class="btn" />
+         <h:button value="Cancel" outcome="faculties" class="btn btn-secondary" />
+      </h:form>
+   </div>
+</h:body>
+</html>
