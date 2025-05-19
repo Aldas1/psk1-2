@@ -3,7 +3,6 @@ package com.university.beans;
 import com.university.entity.Course;
 import com.university.entity.Student;
 import com.university.service.CourseService;
-import com.university.service.OptimisticLockingDemoService;
 import com.university.service.StudentService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -148,25 +147,27 @@ public class StudentBean implements Serializable {
         }
     }
 
-    // In StudentBean.java
-    @Inject
-    private OptimisticLockingDemoService optimisticLockingDemoService;
-
+    @Transactional
     public String demonstrateOptimisticLocking(Long id) {
         try {
-            String result = optimisticLockingDemoService.demonstrateOptimisticLocking(id);
+            // This will now be implemented more safely
+            Student student = studentService.getStudentByIdJpa(id);
+            // Perform operations that might cause OptimisticLockException
+
+            // For demo purposes, we'll simulate a concurrent modification
+            studentService.simulateConcurrentModification(id);
+
+            // Now try to update the same student
+            student.setFirstName(student.getFirstName() + " - Updated");
+            studentService.saveStudentJpa(student);
+
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            "Optimistic Locking Demo", result));
-
-            // Refresh the student list to show the updated data
-            init();
-
-            return null;
+                            "Optimistic locking demonstration completed", null));
         } catch (Exception e) {
-            handleException("Error in optimistic locking demonstration", e);
-            return null;
+            handleException("Optimistic Lock Exception Demo", e);
         }
+        return null;
     }
 
     private void handleException(String message, Exception e) {

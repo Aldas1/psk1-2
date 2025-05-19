@@ -1,4 +1,3 @@
-<!-- optimisticLockingDemo.xhtml -->
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -8,6 +7,60 @@
 <h:head>
     <title>Optimistic Locking Demo</title>
     <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .result-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            white-space: pre-line;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .step-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 0;
+        }
+        .step-content {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            padding: 15px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .step-active {
+            border-left: 4px solid #2980b9;
+        }
+        .step-completed {
+            border-left: 4px solid #27ae60;
+        }
+        .step-pending {
+            border-left: 4px solid #95a5a6;
+            opacity: 0.7;
+        }
+        .version-badge {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+    </style>
 </h:head>
 
 <h:body>
@@ -19,7 +72,6 @@
                 <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
                 <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
                 <h:link outcome="students" value="Students" styleClass="nav-item"/>
-                <h:link outcome="demoIndex" value="Feature Demos" styleClass="nav-item"/>
                 <h:link outcome="optimisticLockingDemo" value="OptLock Demo" styleClass="nav-item current"/>
             </div>
         </div>
@@ -27,39 +79,34 @@
         <div class="content">
             <h2>Optimistic Locking Demonstration</h2>
 
-            <h:messages globalOnly="true" infoClass="info-message" errorClass="error-message" warnClass="warning-message"/>
+            <h:messages globalOnly="true" styleClass="messages" infoClass="info-message" errorClass="error-message" warnClass="warning-message"/>
 
             <div class="info-box">
-                <h3>About Optimistic Locking</h3>
-                <p>Optimistic locking is a concurrency control method that allows multiple users to access the same
-                    record for edits without locking it. It assumes conflicts are rare.</p>
-
-                <h4>How It Works:</h4>
+                <h3>How Optimistic Locking Works</h3>
+                <p>This demonstration shows how JPA's optimistic locking mechanism works:</p>
                 <ol>
-                    <li>Each entity has a <code>@Version</code> field that is automatically incremented on each update.</li>
-                    <li>When updating, JPA checks if the version matches the database version.</li>
-                    <li>If the versions don't match, an <code>OptimisticLockException</code> is thrown.</li>
+                    <li>Each entity has a version field that is automatically incremented when the entity is updated.</li>
+                    <li>When updating an entity, JPA checks if the version number matches what's in the database.</li>
+                    <li>If the version numbers don't match (meaning someone else updated the record), an OptimisticLockException is thrown.</li>
+                    <li>The proper way to recover is to get a fresh copy of the entity and reapply your changes.</li>
                 </ol>
-
-                <h4>What Happens During OptimisticLockException:</h4>
-                <ol>
-                    <li>The current transaction is automatically marked for rollback.</li>
-                    <li>The persistence context is cleared for the failed entity.</li>
-                    <li>To recover, you need to:
-                        <ul>
-                            <li>Get a fresh copy of the entity from the database</li>
-                            <li>Reapply your changes</li>
-                            <li>Save the entity again</li>
-                        </ul>
-                    </li>
-                </ol>
+                <p><strong>Follow the steps below in order to see optimistic locking in action.</strong></p>
             </div>
 
-            <!-- Step 1: Select a student -->
-            <div class="form-section">
-                <h3>Step 1: Select a Student to Edit</h3>
+            <!-- Results display -->
+            <h:panelGroup rendered="#{not empty optLockDemoBean.results}">
+                <h3>Results</h3>
+                <div class="result-box">#{optLockDemoBean.results}</div>
+            </h:panelGroup>
 
-                <h:form id="selectStudentForm">
+            <!-- Step 1: Select a student -->
+            <h3 class="step-header #{optLockDemoBean.currentStep >= 1 ? 'step-completed' : 'step-active'}">
+                Step 1: Select a Student
+            </h3>
+            <div class="step-content #{optLockDemoBean.currentStep >= 1 ? 'step-completed' : 'step-active'}">
+                <p>Select a student from the list to start the demonstration:</p>
+
+                <h:form id="selectForm">
                     <h:dataTable value="#{studentBean.students}" var="student" styleClass="data-table"
                                  headerClass="table-header" rowClasses="table-row-odd, table-row-even">
                         <h:column>
@@ -79,92 +126,86 @@
 
                         <h:column>
                             <f:facet name="header">Version</f:facet>
-                            #{student.version}
+                            <span class="version-badge">#{student.version}</span>
                         </h:column>
 
                         <h:column>
                             <f:facet name="header">Action</f:facet>
-                            <h:commandButton value="Select"
-                                             action="#{optLockDemoBean.loadStudent(student.id)}"
-                                             styleClass="button small"/>
+                            <h:commandButton value="Select" action="#{optLockDemoBean.selectStudent(student.id)}"
+                                             styleClass="button small"
+                                             disabled="#{optLockDemoBean.currentStep > 0}"/>
                         </h:column>
                     </h:dataTable>
                 </h:form>
             </div>
 
-            <!-- Step 2: Edit the student -->
-            <div class="form-section">
-                <h3>Step 2: Edit the Student</h3>
+            <!-- Step 2: Normal Update -->
+            <h3 class="step-header #{optLockDemoBean.currentStep > 1 ? 'step-completed' : (optLockDemoBean.currentStep == 1 ? 'step-active' : 'step-pending')}">
+                Step 2: Normal Update
+            </h3>
+            <div class="step-content #{optLockDemoBean.currentStep > 1 ? 'step-completed' : (optLockDemoBean.currentStep == 1 ? 'step-active' : 'step-pending')}">
+                <p>Perform a normal update on the selected student:</p>
 
-                <h:form id="editStudentForm">
-                    <div class="form-row">
-                        <h:outputLabel for="studentId" value="Student ID:"/>
-                        <h:outputText id="studentId" value="#{optLockDemoBean.selectedStudent.studentId}"/>
-                    </div>
-
-                    <div class="form-row">
-                        <h:outputLabel for="version" value="Current Version:"/>
-                        <h:outputText id="version" value="#{optLockDemoBean.selectedStudent.version}"/>
-                    </div>
-
-                    <div class="form-row">
-                        <h:outputLabel for="firstName" value="First Name:"/>
-                        <h:inputText id="firstName" value="#{optLockDemoBean.newFirstName}"
-                                     disabled="#{empty optLockDemoBean.selectedStudent.id}"/>
-                    </div>
-
-                    <div class="form-row">
-                        <h:outputLabel for="lastName" value="Last Name:"/>
-                        <h:inputText id="lastName" value="#{optLockDemoBean.newLastName}"
-                                     disabled="#{empty optLockDemoBean.selectedStudent.id}"/>
-                    </div>
+                <h:form id="step2Form">
+                    <h:commandButton value="Perform Normal Update"
+                                     action="#{optLockDemoBean.runStep2}"
+                                     styleClass="button"
+                                     disabled="#{optLockDemoBean.currentStep != 1}"/>
                 </h:form>
             </div>
 
-            <!-- Step 3: Simulate conflict and recovery -->
-            <div class="form-section">
-                <h3>Step 3: Demonstrate Optimistic Locking</h3>
+            <!-- Step 3: Direct DB Update -->
+            <h3 class="step-header #{optLockDemoBean.currentStep > 2 ? 'step-completed' : (optLockDemoBean.currentStep == 2 ? 'step-active' : 'step-pending')}">
+                Step 3: Simulate Concurrent Modification
+            </h3>
+            <div class="step-content #{optLockDemoBean.currentStep > 2 ? 'step-completed' : (optLockDemoBean.currentStep == 2 ? 'step-active' : 'step-pending')}">
+                <p>Simulate a concurrent modification by directly updating the database:</p>
 
-                <h:form id="conflictForm">
-                    <div class="form-actions">
-                        <h:commandButton value="1. Simulate Concurrent Update"
-                                         action="#{optLockDemoBean.simulateConcurrentUpdate()}"
-                                         styleClass="button"
-                                         disabled="#{empty optLockDemoBean.selectedStudent.id}"/>
-
-                        <h:commandButton value="2. Recover from Conflict"
-                                         action="#{optLockDemoBean.recoverFromConflict()}"
-                                         styleClass="button"
-                                         disabled="#{empty optLockDemoBean.selectedStudent.id or not optLockDemoBean.conflictOccurred}"/>
-
-                        <h:commandButton value="3. Refresh Student List"
-                                         action="#{studentBean.init()}"
-                                         styleClass="button"/>
-                    </div>
-
-                    <h:panelGroup rendered="#{not empty optLockDemoBean.result}" styleClass="result-box">
-                        <h4>Result:</h4>
-                        <p>#{optLockDemoBean.result}</p>
-                    </h:panelGroup>
+                <h:form id="step3Form">
+                    <h:commandButton value="Simulate Concurrent Modification"
+                                     action="#{optLockDemoBean.runStep3}"
+                                     styleClass="button"
+                                     disabled="#{optLockDemoBean.currentStep != 2}"/>
                 </h:form>
             </div>
 
-            <div class="info-box">
-                <h4>Detailed Explanation of the Demo</h4>
-                <ol>
-                    <li><strong>Select a student</strong> to edit from the table.</li>
-                    <li><strong>Modify the name values</strong> as you wish.</li>
-                    <li>Click <strong>"Simulate Concurrent Update"</strong> - this simulates another user modifying the same student record.</li>
-                    <li>An <strong>OptimisticLockException</strong> should occur because the version number in the database no longer matches the version in your entity.</li>
-                    <li>Click <strong>"Recover from Conflict"</strong> to demonstrate how to properly recover:
-                        <ul>
-                            <li>Get a fresh copy of the entity with the current version</li>
-                            <li>Apply your changes to this fresh copy</li>
-                            <li>Save the updated entity</li>
-                        </ul>
-                    </li>
-                    <li>Click <strong>"Refresh Student List"</strong> to see the final updated version.</li>
-                </ol>
+            <!-- Step 4: Try Update with Stale Version -->
+            <h3 class="step-header #{optLockDemoBean.currentStep > 3 ? 'step-completed' : (optLockDemoBean.currentStep == 3 ? 'step-active' : 'step-pending')}">
+                Step 4: Trigger OptimisticLockException
+            </h3>
+            <div class="step-content #{optLockDemoBean.currentStep > 3 ? 'step-completed' : (optLockDemoBean.currentStep == 3 ? 'step-active' : 'step-pending')}">
+                <p>Try to update the student with a stale version (this should trigger an OptimisticLockException):</p>
+
+                <h:form id="step4Form">
+                    <h:commandButton value="Attempt Update with Stale Version"
+                                     action="#{optLockDemoBean.runStep4}"
+                                     styleClass="button"
+                                     disabled="#{optLockDemoBean.currentStep != 3}"/>
+                </h:form>
+            </div>
+
+            <!-- Step 5: Recovery Demo -->
+            <h3 class="step-header #{optLockDemoBean.currentStep > 4 ? 'step-completed' : (optLockDemoBean.currentStep == 4 ? 'step-active' : 'step-pending')}">
+                Step 5: Demonstrate Recovery
+            </h3>
+            <div class="step-content #{optLockDemoBean.currentStep > 4 ? 'step-completed' : (optLockDemoBean.currentStep == 4 ? 'step-active' : 'step-pending')}">
+                <p>Demonstrate how to properly recover from an OptimisticLockException:</p>
+
+                <h:form id="step5Form">
+                    <h:commandButton value="Perform Recovery"
+                                     action="#{optLockDemoBean.runStep5}"
+                                     styleClass="button"
+                                     disabled="#{optLockDemoBean.currentStep != 4}"/>
+                </h:form>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="form-section">
+                <h:form id="resetForm">
+                    <h:commandButton value="Start Over"
+                                     action="optimisticLockingDemo?faces-redirect=true"
+                                     styleClass="button secondary"/>
+                </h:form>
             </div>
         </div>
 

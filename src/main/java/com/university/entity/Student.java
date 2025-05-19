@@ -15,6 +15,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class Student implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,7 +36,7 @@ public class Student implements Serializable {
 
     @Version
     @Column(name = "version")
-    private Long version;
+    private Long version = 0L;
 
     // Many-to-many relationship with courses
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
