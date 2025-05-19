@@ -270,6 +270,37 @@ public class OptLockDemoBean implements Serializable {
         }
     }
 
+    public String startOver() {
+        try {
+            // Reset the selected student name if there was one
+            if (selectedStudentId != null) {
+                demoService.resetStudentName(selectedStudentId);
+            } else {
+                // If no student was selected, reset all student names
+                // This helps clean up from any incomplete demos
+                demoService.resetAllStudentNames();
+            }
+
+            // Reset the bean state
+            reset();
+
+            // Refresh the student list
+            studentBean.init();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            "Reset Complete", "Ready for a new demonstration"));
+
+            return "optimisticLockingDemo?faces-redirect=true";
+        } catch (Exception e) {
+            logger.severe("Error in startOver: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error", "Failed to reset: " + e.getMessage()));
+            return null;
+        }
+    }
+
     public String getResults() {
         return results;
     }

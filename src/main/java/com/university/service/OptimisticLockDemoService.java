@@ -7,6 +7,7 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -123,6 +124,75 @@ public class OptimisticLockDemoService {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in recovery demonstration", e);
             return "ERROR IN RECOVERY: " + e.getMessage();
+        }
+    }
+
+    @Transactional
+    public void resetStudentName(Long studentId) {
+        logger.info("Resetting student name for ID: " + studentId);
+
+        try {
+            // Get current student
+            Student student = em.find(Student.class, studentId);
+            if (student == null) {
+                logger.warning("Cannot reset student name - student not found with ID: " + studentId);
+                return;
+            }
+
+            // Remove any modification markers from the name
+            String currentName = student.getFirstName();
+            String cleanName = currentName
+                    .replace(" [Updated]", "")
+                    .replace(" [Modified Directly]", "")
+                    .replace(" [Should Fail]", "")
+                    .replace(" [Recovered]", "")
+                    .replace(" - Modified 1", "")
+                    .replace(" - Modified 2", "")
+                    .replace(" - Recovered", "");
+
+            // Update the name if it was changed
+            if (!currentName.equals(cleanName)) {
+                student.setFirstName(cleanName);
+                em.merge(student);
+                em.flush();
+                logger.info("Student name reset from '" + currentName + "' to '" + cleanName + "'");
+            } else {
+                logger.info("No need to reset student name - already clean");
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error resetting student name", e);
+        }
+    }
+
+    /**
+     * Resets all student names in the database
+     */
+    @Transactional
+    public void resetAllStudentNames() {
+        logger.info("Resetting all student names");
+
+        try {
+            // Query for all students that may have been modified during demos
+            List<Student> modifiedStudents = em.createQuery(
+                    "SELECT s FROM Student s WHERE " +
+                            "s.firstName LIKE '% [Updated]%' OR " +
+                            "s.firstName LIKE '% [Modified Directly]%' OR " +
+                            "s.firstName LIKE '% [Should Fail]%' OR " +
+                            "s.firstName LIKE '% [Recovered]%' OR " +
+                            "s.firstName LIKE '% - Modified%' OR " +
+                            "s.firstName LIKE '% - Recovered%'",
+                    Student.class).getResultList();
+
+            logger.info("Found " + modifiedStudents.size() + " students with modified names");
+
+            // Reset each student's name
+            for (Student student : modifiedStudents) {
+                resetStudentName(student.getId());
+            }
+
+            logger.info("All student names reset successfully");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error resetting all student names", e);
         }
     }
 }
