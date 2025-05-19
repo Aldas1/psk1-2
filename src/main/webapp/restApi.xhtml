@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>REST API Demo</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .api-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .endpoint {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 5px;
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+        .method {
+            font-weight: bold;
+            display: inline-block;
+            width: 60px;
+        }
+        .method.get { color: #61affe; }
+        .method.post { color: #49cc90; }
+        .method.put { color: #fca130; }
+        .method.delete { color: #f93e3e; }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="container">
+        <div class="header">
+            <h1>REST API Documentation</h1>
+            <div class="nav">
+                <h:link outcome="index" value="Home" styleClass="nav-item"/>
+                <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
+                <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
+                <h:link outcome="students" value="Students" styleClass="nav-item"/>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>RESTful API Endpoints</h2>
+
+            <p>The following RESTful API endpoints are available for integration with other systems.</p>
+
+            <div class="api-section">
+                <h3>Faculty API</h3>
+
+                <div class="endpoint">
+                    <span class="method get">GET</span> /api/faculties
+                </div>
+                <p>Retrieves a list of all faculties.</p>
+
+                <div class="endpoint">
+                    <span class="method get">GET</span> /api/faculties/{id}
+                </div>
+                <p>Retrieves a specific faculty by ID.</p>
+
+                <div class="endpoint">
+                    <span class="method post">POST</span> /api/faculties
+                </div>
+                <p>Creates a new faculty.</p>
+                <pre>
+// Request body example:
+{
+  "name": "Faculty of Science",
+  "department": "Mathematics"
+}
+                </pre>
+
+                <div class="endpoint">
+                    <span class="method put">PUT</span> /api/faculties/{id}
+                </div>
+                <p>Updates an existing faculty.</p>
+                <pre>
+// Request body example:
+{
+  "name": "Faculty of Science",
+  "department": "Computer Science"
+}
+                </pre>
+
+                <div class="endpoint">
+                    <span class="method delete">DELETE</span> /api/faculties/{id}
+                </div>
+                <p>Deletes a faculty by ID.</p>
+            </div>
+
+            <div class="api-section">
+                <h3>Course API</h3>
+
+                <div class="endpoint">
+                    <span class="method get">GET</span> /api/courses
+                </div>
+                <p>Retrieves a list of all courses.</p>
+
+                <div class="endpoint">
+                    <span class="method get">GET</span> /api/courses/{id}
+                </div>
+                <p>Retrieves a specific course by ID.</p>
+
+                <div class="endpoint">
+                    <span class="method post">POST</span> /api/courses
+                </div>
+                <p>Creates a new course.</p>
+                <pre>
+// Request body example:
+{
+  "courseCode": "CS101",
+  "title": "Introduction to Programming",
+  "credits": 6,
+  "facultyId": 1
+}
+                </pre>
+
+                <div class="endpoint">
+                    <span class="method put">PUT</span> /api/courses/{id}
+                </div>
+                <p>Updates an existing course.</p>
+                <pre>
+// Request body example:
+{
+  "courseCode": "CS101",
+  "title": "Advanced Programming",
+  "credits": 8,
+  "facultyId": 1
+}
+                </pre>
+
+                <div class="endpoint">
+                    <span class="method delete">DELETE</span> /api/courses/{id}
+                </div>
+                <p>Deletes a course by ID.</p>
+            </div>
+
+            <h3>Testing the API</h3>
+
+            <p>You can test the API using curl commands from the command line:</p>
+
+            <pre>
+# Get all faculties
+curl -X GET http://localhost:8080/university/api/faculties
+
+# Create a new faculty
+curl -X POST http://localhost:8080/university/api/faculties \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Faculty of Arts","department":"Music"}'
+
+# Get a specific faculty
+curl -X GET http://localhost:8080/university/api/faculties/1
+
+# Update a faculty
+curl -X PUT http://localhost:8080/university/api/faculties/1 \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Faculty of Arts","department":"Visual Arts"}'
+
+# Delete a faculty
+curl -X DELETE http://localhost:8080/university/api/faculties/1
+            </pre>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 University Management System</p>
+        </div>
+    </div>
+</h:body>
+</html>

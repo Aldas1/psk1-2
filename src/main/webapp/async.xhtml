@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Asynchronous Demo</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <style>
+        .task-list {
+            margin-top: 20px;
+        }
+        .task-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .task-complete {
+            background-color: #e8f5e9;
+        }
+        .task-error {
+            background-color: #ffebee;
+        }
+        .explanation {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="container">
+        <div class="header">
+            <h1>Asynchronous Processing Demo</h1>
+            <div class="nav">
+                <h:link outcome="index" value="Home" styleClass="nav-item"/>
+                <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
+                <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
+                <h:link outcome="students" value="Students" styleClass="nav-item"/>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>Long Running Calculation</h2>
+
+            <h:messages globalOnly="true" styleClass="error-message"/>
+
+            <h:form>
+                <div class="form-section">
+                    <div class="form-row">
+                        <h:outputLabel for="input" value="Input Number:"/>
+                        <h:inputText id="input" value="#{asyncDemoBean.input}" required="true"/>
+                        <h:message for="input" styleClass="error-message"/>
+                    </div>
+
+                    <div class="form-row">
+                        <h:commandButton value="Start Calculation" action="#{asyncDemoBean.startCalculation}"
+                                         styleClass="button"/>
+                        <h:commandButton value="Check Results" action="#{asyncDemoBean.checkResults}"
+                                         styleClass="button"/>
+                        <h:commandButton value="Clear Completed" action="#{asyncDemoBean.clearCompletedTasks}"
+                                         styleClass="button secondary"/>
+                    </div>
+                </div>
+
+                <h3>Test Transaction and EntityManager</h3>
+                <div class="form-section">
+                    <div class="form-row">
+                        <h:commandButton value="Test Transaction" action="#{asyncDemoBean.testTransaction}"
+                                         styleClass="button"/>
+                        <h:commandButton value="Test EntityManager" action="#{asyncDemoBean.testEntityManager}"
+                                         styleClass="button"/>
+                    </div>
+
+                    <div class="form-row" rendered="#{not empty asyncDemoBean.transactionTestResult}">
+                        <h:outputLabel value="Transaction Test Result:"/>
+                        <h:outputText value="#{asyncDemoBean.transactionTestResult}"/>
+                    </div>
+
+                    <div class="form-row" rendered="#{not empty asyncDemoBean.entityManagerTestResult}">
+                        <h:outputLabel value="EntityManager Test Result:"/>
+                        <h:outputText value="#{asyncDemoBean.entityManagerTestResult}"/>
+                    </div>
+                </div>
+            </h:form>
+
+            <h3>Task Status</h3>
+            <div class="task-list">
+                <ui:repeat value="#{asyncDemoBean.taskStatuses}" var="task">
+                    <div class="task-item #{task.complete ? (task.error != null ? 'task-error' : 'task-complete') : ''}">
+                        <p><strong>Input:</strong> #{task.input}</p>
+                        <p><strong>Status:</strong> #{task.complete ? 'Completed' : 'Running'}</p>
+                        <p rendered="#{task.result != null}"><strong>Result:</strong> #{task.result}</p>
+                        <p rendered="#{task.error != null}"><strong>Error:</strong> #{task.error}</p>
+                    </div>
+                </ui:repeat>
+
+                <h:panelGroup rendered="#{empty asyncDemoBean.taskStatuses}">
+                    <p>No tasks have been started yet.</p>
+                </h:panelGroup>
+            </div>
+
+            <div class="explanation">
+                <h3>Asynchronous Processing Explanation</h3>
+                <p><strong>Can an asynchronous component join the caller's transaction?</strong></p>
+                <p>No, asynchronous methods (marked with @Asynchronous) always execute in a separate transaction context.
+                    They cannot join the caller's transaction because they run in a different thread. This is demonstrated
+                    in the transaction test.</p>
+
+                <p><strong>Can an asynchronous component use a @RequestScoped EntityManager?</strong></p>
+                <p>No, a @RequestScoped EntityManager won't work in asynchronous methods because it's tied to the HTTP request lifecycle.
+                    Since the asynchronous method executes outside of the original request's lifecycle, any @RequestScoped resources
+                    would be unavailable. Instead, container-managed persistence contexts (@PersistenceContext) can be used
+                    as demonstrated in the EntityManager test.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 University Management System</p>
+        </div>
+    </div>
+</h:body>
+</html>

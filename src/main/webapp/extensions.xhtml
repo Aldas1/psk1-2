@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+   <title>CDI Extensions Demo</title>
+   <h:outputStylesheet library="css" name="styles.css"/>
+   <style>
+      .demo-section {
+         margin-bottom: 30px;
+         padding: 15px;
+         background-color: #f9f9f9;
+         border-radius: 5px;
+         border: 1px solid #ddd;
+      }
+      .code-example {
+         background-color: #f5f5f5;
+         padding: 10px;
+         border-radius: 3px;
+         font-family: monospace;
+         white-space: pre-wrap;
+         margin: 10px 0;
+      }
+   </style>
+</h:head>
+<h:body>
+   <div class="container">
+      <div class="header">
+         <h1>CDI Extensions Demonstration</h1>
+         <div class="nav">
+            <h:link outcome="index" value="Home" styleClass="nav-item"/>
+            <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
+            <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
+            <h:link outcome="students" value="Students" styleClass="nav-item"/>
+         </div>
+      </div>
+
+      <div class="content">
+         <h2>CDI Glass-box Extensibility</h2>
+
+         <h:messages globalOnly="true" styleClass="error-message"/>
+
+         <!-- Alternative Demo -->
+         <div class="demo-section">
+            <h3>1. CDI Alternatives (@Alternative)</h3>
+            <p>This example demonstrates the use of CDI Alternatives for providing different implementations of the same interface.</p>
+
+            <h:form>
+               <div class="form-row">
+                  <h:outputLabel for="logMessage" value="Message:"/>
+                  <h:inputText id="logMessage" value="#{cdiDemoBean.message}"/>
+               </div>
+
+               <div class="form-row">
+                  <h:commandButton value="Log Message" action="#{cdiDemoBean.logMessage}" styleClass="button"/>
+                  <h:commandButton value="Generate Warning" action="#{cdiDemoBean.generateWarning}" styleClass="button"/>
+                  <h:commandButton value="Generate Error" action="#{cdiDemoBean.generateError}" styleClass="button"/>
+               </div>
+
+               <div class="form-row" rendered="#{not empty cdiDemoBean.result}">
+                  <h:outputText value="#{cdiDemoBean.result}"/>
+               </div>
+            </h:form>
+
+            <div class="code-example">
+               <h:outputText value="// Selected in beans.xml:
+<alternatives>
+    <class>com.university.cdi.alternative.EnhancedLoggingService</class>
+</alternatives>"/>
+            </div>
+         </div>
+
+         <!-- Specializes Demo -->
+         <div class="demo-section">
+            <h3>2. CDI Specialization (@Specializes)</h3>
+            <p>The StudentService has been specialized with a version that adds logging around method calls.
+               When you navigate to the Students page, the specialized version is automatically used.</p>
+
+            <div class="code-example">
+               <h:outputText value="@Named
+@Specializes
+public class SpecializedStudentService extends StudentService {
+    // Enhances behavior of the parent class
+}"/>
+            </div>
+
+            <h:link outcome="students" value="Navigate to Students" styleClass="button"/>
+         </div>
+
+         <!-- Interceptor Demo -->
+         <div class="demo-section">
+            <h3>3. CDI Interceptor (@Interceptor)</h3>
+            <p>The InterceptedCourseService uses a LoggingInterceptor to automatically log method entry, exit, and execution time.</p>
+
+            <div class="code-example">
+               <h:outputText value="// Interceptor binding:
+@InterceptorBinding
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Logged {}
+
+// Interceptor implementation:
+@Logged
+@Interceptor
+public class LoggingInterceptor {
+    @AroundInvoke
+    public Object logMethodCall(InvocationContext context) throws Exception {
+        // Implementation
+    }
+}
+
+// Enabled in beans.xml:
+<interceptors>
+    <class>com.university.cdi.interceptor.LoggingInterceptor</class>
+</interceptors>"/>
+            </div>
+         </div>
+
+         <!-- Decorator Demo -->
+         <div class="demo-section">
+            <h3>4. CDI Decorator (@Decorator)</h3>
+            <p>This demonstrates using a decorator to add behavior to the NotificationService.</p>
+
+            <h:form>
+               <div class="form-row">
+                  <h:outputLabel for="recipient" value="Recipient:"/>
+                  <h:inputText id="recipient" value="#{decoratorDemoBean.recipient}"/>
+               </div>
+
+               <div class="form-row">
+                  <h:outputLabel for="subject" value="Subject:"/>
+                  <h:inputText id="subject" value="#{decoratorDemoBean.subject}"/>
+               </div>
+
+               <div class="form-row">
+                  <h:outputLabel for="notificationMessage" value="Message:"/>
+                  <h:inputTextarea id="notificationMessage" value="#{decoratorDemoBean.message}" rows="3"/>
+               </div>
+
+               <div class="form-row">
+                  <h:commandButton value="Send Notification" action="#{decoratorDemoBean.sendNotification}" styleClass="button"/>
+                  <h:commandButton value="Send System Alert" action="#{decoratorDemoBean.sendSystemAlert}" styleClass="button"/>
+               </div>
+
+               <div class="form-row" rendered="#{not empty decoratorDemoBean.result}">
+                  <h:outputText value="#{decoratorDemoBean.result}"/>
+               </div>
+            </h:form>
+
+            <div class="code-example">
+               <h:outputText value="@Decorator
+@Priority(10)
+public class LoggingNotificationDecorator implements NotificationService {
+    @Inject
+    @Delegate
+    @Any
+    private NotificationService notificationService;
+
+    // Decorator methods
+}
+
+// Enabled in beans.xml:
+<decorators>
+    <class>com.university.cdi.decorator.LoggingNotificationDecorator</class>
+</decorators>"/>
+            </div>
+         </div>
+      </div>
+
+      <div class="footer">
+         <p>&copy; 2025 University Management System</p>
+      </div>
+   </div>
+</h:body>
+</html>

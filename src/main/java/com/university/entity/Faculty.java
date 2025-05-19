@@ -26,6 +26,9 @@ public class Faculty implements Serializable {
     @Column(name = "department")
     private String department;
 
+    @Version
+    private Integer version;
+
     // One-to-many relationship with courses
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Course> courses = new HashSet<>();

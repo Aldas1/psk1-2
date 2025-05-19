@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+   <title>Optimistic Locking Demo</title>
+   <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+<h:body>
+   <div class="container">
+      <div class="header">
+         <h1>Optimistic Locking Demonstration</h1>
+         <div class="nav">
+            <h:link outcome="index" value="Home" styleClass="nav-item"/>
+            <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
+            <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
+            <h:link outcome="students" value="Students" styleClass="nav-item"/>
+         </div>
+      </div>
+
+      <div class="content">
+         <h2>Optimistic Locking Demo</h2>
+
+         <h:messages globalOnly="true" styleClass="error-message"/>
+
+         <p>This demonstration shows what happens when two users try to update the same record simultaneously.</p>
+
+         <h:form>
+            <div class="form-section">
+               <div class="form-row">
+                  <h:outputLabel for="faculty" value="Select Faculty:"/>
+                  <h:selectOneMenu id="faculty" value="#{optimisticLockingDemo.facultyId}">
+                     <f:selectItems value="#{facultyBean.faculties}" var="faculty"
+                                    itemLabel="#{faculty.name}" itemValue="#{faculty.id}"/>
+                  </h:selectOneMenu>
+               </div>
+
+               <div class="form-row">
+                  <h:commandButton value="Run Optimistic Locking Demo"
+                                   action="#{optimisticLockingDemo.demonstrateOptimisticLocking}"
+                                   styleClass="button"/>
+               </div>
+            </div>
+         </h:form>
+
+         <h3>Result:</h3>
+         <p>#{optimisticLockingDemo.result}</p>
+
+         <h3>Explanation:</h3>
+         <div class="explanation">
+            <p><strong>What happens with the transaction when OptimisticLockException occurs?</strong></p>
+            <p>When an OptimisticLockException occurs, the current transaction is marked for rollback.
+               Any changes made in that transaction are discarded and will not be committed to the database.</p>
+
+            <p><strong>What happens with the EntityManager when OptimisticLockException occurs?</strong></p>
+            <p>The EntityManager remains usable for read operations, but any attempt to commit the
+               transaction will result in a RollbackException. To save the entity after an OptimisticLockException,
+               you need to:</p>
+            <ol>
+               <li>Begin a new transaction</li>
+               <li>Reload the entity from the database to get the latest version</li>
+               <li>Reapply your changes</li>
+               <li>Merge and commit</li>
+            </ol>
+         </div>
+      </div>
+
+      <div class="footer">
+         <p>&copy; 2025 University Management System</p>
+      </div>
+   </div>
+</h:body>
+</html>

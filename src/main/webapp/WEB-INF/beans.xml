@@ -4,4 +4,17 @@
        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
        version="4.0"
        bean-discovery-mode="all">
+
+    <alternatives>
+        <class>com.university.cdi.alternative.EnhancedLoggingService</class>
+    </alternatives>
+
+    <interceptors>
+        <class>com.university.cdi.interceptor.LoggingInterceptor</class>
+    </interceptors>
+
+    <decorators>
+        <class>com.university.cdi.decorator.LoggingNotificationDecorator</class>
+    </decorators>
+
 </beans>
