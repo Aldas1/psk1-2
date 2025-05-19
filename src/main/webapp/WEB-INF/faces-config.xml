@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config
+        xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_4_0.xsd"
+        version="4.0">
+
+    <navigation-rule>
+        <from-view-id>/faculties.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>editFaculty</from-outcome>
+            <to-view-id>/editFaculty.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/courses.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>editCourse</from-outcome>
+            <to-view-id>/editCourse.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/students.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>editStudent</from-outcome>
+            <to-view-id>/editStudent.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+</faces-config>
