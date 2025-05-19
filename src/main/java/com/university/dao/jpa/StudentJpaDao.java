@@ -20,7 +20,11 @@ public class StudentJpaDao {
     }
 
     public Student getStudentById(Long id) {
-        return em.find(Student.class, id);
+        return em.createQuery(
+                    "SELECT s FROM Student s LEFT JOIN FETCH s.courses WHERE s.id = :id",
+                    Student.class)
+            .setParameter("id", id)
+            .getSingleResult();
     }
 
     @Transactional

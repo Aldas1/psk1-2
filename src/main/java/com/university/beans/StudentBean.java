@@ -6,11 +6,14 @@ import com.university.service.CourseService;
 import com.university.service.StudentService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
 
 @Named
 @RequestScoped
@@ -36,50 +39,94 @@ public class StudentBean implements Serializable {
     }
 
     public String saveStudent() {
-        studentService.saveStudentJpa(newStudent);
-        init(); // Refresh the list
-        return "students?faces-redirect=true";
+        try {
+            studentService.saveStudentJpa(newStudent);
+            init(); // Refresh the list
+            return "students?faces-redirect=true";
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error saving student", e.getMessage()));
+            return null;
+        }
     }
 
     public String deleteStudent(Long id) {
-        studentService.deleteStudentJpa(id);
-        init(); // Refresh the list
-        return "students?faces-redirect=true";
+        try {
+            studentService.deleteStudentJpa(id);
+            init(); // Refresh the list
+            return "students?faces-redirect=true";
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error deleting student", e.getMessage()));
+            return null;
+        }
     }
 
     public String editStudent(Student student) {
-        this.selectedStudent = student;
+        // Reload the student to ensure all associations are loaded
+        this.selectedStudent = studentService.getStudentByIdJpa(student.getId());
         return "editStudent?faces-redirect=true";
     }
 
     public String updateStudent() {
-        studentService.saveStudentJpa(selectedStudent);
-        return "students?faces-redirect=true";
+        try {
+            studentService.saveStudentJpa(selectedStudent);
+            return "students?faces-redirect=true";
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error updating student", e.getMessage()));
+            return null;
+        }
     }
 
     public String enrollInCourse() {
-        if (selectedStudent != null && selectedCourseId != null) {
-            studentService.enrollStudentInCourseJpa(selectedStudent.getId(), selectedCourseId);
-            // Refresh the selected student to show updated courses
-            selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
+        try {
+            if (selectedStudent != null && selectedCourseId != null) {
+                studentService.enrollStudentInCourseJpa(selectedStudent.getId(), selectedCourseId);
+                // Refresh the selected student to show updated courses
+                selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Enrollment successful", "Student has been enrolled in the course."));
+            }
+            return "editStudent?faces-redirect=true";
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error enrolling student", e.getMessage()));
+            return null;
         }
-        return "editStudent?faces-redirect=true";
     }
 
     public String removeFromCourse(Long courseId) {
-        if (selectedStudent != null) {
-            studentService.removeStudentFromCourseJpa(selectedStudent.getId(), courseId);
-            // Refresh the selected student to show updated courses
-            selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
+        try {
+            if (selectedStudent != null) {
+                studentService.removeStudentFromCourseJpa(selectedStudent.getId(), courseId);
+                // Refresh the selected student to show updated courses
+                selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Course removed", "Student has been removed from the course."));
+            }
+            return "editStudent?faces-redirect=true";
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error removing course", e.getMessage()));
+            return null;
         }
-        return "editStudent?faces-redirect=true";
     }
 
     public List<Course> getAvailableCourses() {
         // Get all courses that the student is not already enrolled in
         List<Course> allCourses = courseService.getAllCoursesJpa();
         if (selectedStudent != null && selectedStudent.getCourses() != null) {
-            allCourses.removeAll(selectedStudent.getCourses());
+            List<Course> availableCourses = new ArrayList<>(allCourses);
+            availableCourses.removeAll(selectedStudent.getCourses());
+            return availableCourses;
         }
         return allCourses;
     }

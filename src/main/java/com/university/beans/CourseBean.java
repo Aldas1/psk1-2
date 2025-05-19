@@ -53,9 +53,11 @@ public class CourseBean implements Serializable {
     }
 
     public String editCourse(Course course) {
-        this.selectedCourse = course;
-        if (course.getFaculty() != null) {
-            this.selectedFacultyId = course.getFaculty().getId();
+        // Load the fresh course with all associations
+        this.selectedCourse = courseService.getCourseByIdJpa(course.getId());
+        // Set the selected faculty ID
+        if (this.selectedCourse.getFaculty() != null) {
+            this.selectedFacultyId = this.selectedCourse.getFaculty().getId();
         }
         return "editCourse?faces-redirect=true";
     }

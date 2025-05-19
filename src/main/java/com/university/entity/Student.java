@@ -33,7 +33,7 @@ public class Student implements Serializable {
     private String email;
 
     // Many-to-many relationship with courses
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_course",
             joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),

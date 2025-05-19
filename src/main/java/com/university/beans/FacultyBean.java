@@ -42,7 +42,8 @@ public class FacultyBean implements Serializable {
     }
 
     public String editFaculty(Faculty faculty) {
-        this.selectedFaculty = faculty;
+        // Load the fresh faculty with all associations
+        this.selectedFaculty = facultyService.getFacultyByIdJpa(faculty.getId());
         return "editFaculty?faces-redirect=true";
     }
 

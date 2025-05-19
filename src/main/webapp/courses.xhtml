@@ -50,9 +50,9 @@
 
                <div class="form-row">
                   <h:outputLabel for="courseFaculty" value="Faculty:"/>
-                  <h:selectOneMenu id="courseFaculty" value="#{courseBean.newCourse.faculty}" converter="#{facultyConverter}" required="true" requiredMessage="Faculty is required">
+                  <h:selectOneMenu id="courseFaculty" value="#{courseBean.selectedFacultyId}" required="true" requiredMessage="Faculty is required">
                      <f:selectItem itemLabel="-- Select Faculty --" itemValue="#{null}" noSelectionOption="true"/>
-                     <f:selectItems value="#{facultyBean.faculties}" var="faculty" itemLabel="#{faculty.name}" itemValue="#{faculty}"/>
+                     <f:selectItems value="#{facultyBean.faculties}" var="faculty" itemLabel="#{faculty.name} (#{faculty.department})" itemValue="#{faculty.id}"/>
                   </h:selectOneMenu>
                   <h:message for="courseFaculty" styleClass="error-message"/>
                </div>
