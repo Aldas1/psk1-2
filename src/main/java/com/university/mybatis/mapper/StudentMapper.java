@@ -3,10 +3,12 @@ package com.university.mybatis.mapper;
 import com.university.mybatis.entity.StudentMB;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.mybatis.cdi.Transactional;
 
 import java.util.List;
 
 @Mapper
+@Transactional
 public interface StudentMapper {
     List<StudentMB> getAllStudents();
     StudentMB getStudentById(@Param("id") Long id);
