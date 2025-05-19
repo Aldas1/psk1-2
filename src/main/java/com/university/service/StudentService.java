@@ -4,14 +4,25 @@ import com.university.dao.jpa.StudentJpaDao;
 import com.university.dao.mybatis.StudentMyBatisDao;
 import com.university.entity.Student;
 import com.university.mybatis.entity.StudentMB;
+import jakarta.ejb.Stateless;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceUnit;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-@ApplicationScoped
+@Stateless
 public class StudentService {
+    private static final Logger logger = Logger.getLogger(StudentService.class.getName());
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Inject
     private StudentJpaDao studentJpaDao;
@@ -50,6 +61,25 @@ public class StudentService {
 
     public List<Student> getStudentsByCourseIdJpa(Long courseId) {
         return studentJpaDao.getStudentsByCourseId(courseId);
+    }
+
+    /**
+     * Simulates a concurrent modification - this will be called by the OptimisticLockingDemoService
+     */
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void simulateConcurrentModification(Long studentId) {
+        try {
+            // Get the student in a new transaction
+            Student student = em.find(Student.class, studentId);
+            if (student != null) {
+                student.setFirstName(student.getFirstName() + " - Modified by concurrent transaction");
+                em.flush(); // This will commit the change
+                logger.info("Successfully modified student in concurrent transaction: " + student.getFirstName());
+            }
+        } catch (Exception e) {
+            logger.warning("Error in concurrent modification simulation: " + e.getMessage());
+            throw e;
+        }
     }
 
     // MyBatis methods

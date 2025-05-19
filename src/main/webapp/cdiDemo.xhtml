@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>CDI Extensions Demo</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+</h:head>
+
+<h:body>
+    <div class="container">
+        <div class="header">
+            <h1>CDI Extensions Demonstration</h1>
+            <div class="nav">
+                <h:link outcome="index" value="Home" styleClass="nav-item"/>
+                <h:link outcome="faculties" value="Faculties" styleClass="nav-item"/>
+                <h:link outcome="courses" value="Courses" styleClass="nav-item"/>
+                <h:link outcome="students" value="Students" styleClass="nav-item"/>
+                <h:link outcome="asyncDemo" value="Async Demo" styleClass="nav-item"/>
+                <h:link outcome="cdiDemo" value="CDI Demo" styleClass="nav-item current"/>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>CDI Glass-box Extensions</h2>
+
+            <h:messages globalOnly="true" styleClass="info-message"/>
+
+            <!-- 1. Alternative Demo -->
+            <div class="form-section">
+                <h3>1. CDI Alternative Demo</h3>
+                <p>Current notification provider: <strong>#{notificationDemoBean.providerName}</strong></p>
+                <p>This demonstrates the @Alternative annotation. The active implementation is selected in beans.xml.</p>
+
+                <h:form id="notificationForm">
+                    <div class="form-row">
+                        <h:outputLabel for="recipient" value="Recipient:"/>
+                        <h:inputText id="recipient" value="#{notificationDemoBean.recipient}" required="true"/>
+                    </div>
+
+                    <div class="form-row">
+                        <h:outputLabel for="subject" value="Subject:"/>
+                        <h:inputText id="subject" value="#{notificationDemoBean.subject}" required="true"/>
+                    </div>
+
+                    <div class="form-row">
+                        <h:outputLabel for="message" value="Message:"/>
+                        <h:inputTextarea id="message" value="#{notificationDemoBean.message}" rows="3" required="true"/>
+                    </div>
+
+                    <div class="form-actions">
+                        <h:commandButton value="Send Notification" action="#{notificationDemoBean.sendNotification()}" styleClass="button"/>
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- 2. Specialization Demo -->
+            <div class="form-section">
+                <h3>2. CDI Specialization Demo</h3>
+                <p>Specialization allows a bean to completely replace another bean by inheritance.</p>
+                <p>Check server logs to see the enhanced email notification service in action.</p>
+                <p>When both the original EmailNotificationService and the EnhancedEmailNotificationService exist,
+                    the specialized version (EnhancedEmailNotificationService) is automatically used.</p>
+            </div>
+
+            <!-- 3. Interceptor Demo -->
+            <div class="form-section">
+                <h3>3. CDI Interceptor Demo</h3>
+                <p>The LoggingInterceptor adds logging before and after method calls in the LoggedStudentService.</p>
+                <p>Check server logs to see detailed method entry/exit logs with parameters and execution time.</p>
+
+                <h:form id="interceptorForm">
+                    <div class="form-actions">
+                        <h:commandButton value="Call Intercepted Method"
+                                         action="#{interceptorDemoBean.callInterceptedMethod()}"
+                                         styleClass="button"/>
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- 4. Decorator Demo -->
+            <div class="form-section">
+                <h3>4. CDI Decorator Demo</h3>
+                <p>Current report format: <strong>#{reportDemoBean.reportFormat}</strong></p>
+                <p>The decorator adds additional formatting and metadata to the basic report.</p>
+
+                <h:form id="reportForm">
+                    <div class="form-actions">
+                        <h:commandButton value="Generate Student Report"
+                                         action="#{reportDemoBean.generateStudentReport()}"
+                                         styleClass="button"/>
+                    </div>
+                </h:form>
+
+                <h:panelGroup rendered="#{not empty reportDemoBean.generatedReport}">
+                    <h4>Generated Report:</h4>
+                    <pre class="report-display">#{reportDemoBean.generatedReport}</pre>
+                </h:panelGroup>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>2025 University Management System</p>
+        </div>
+    </div>
+</h:body>
+</html>

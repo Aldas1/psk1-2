@@ -32,6 +32,10 @@ public class Student implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     // Many-to-many relationship with courses
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
