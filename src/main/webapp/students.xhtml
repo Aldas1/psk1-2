@@ -90,7 +90,11 @@
 
                     <h:column>
                         <f:facet name="header">Courses</f:facet>
-                        <h:outputText value="#{student.courses.size()} courses" />
+                        <h:commandLink value="#{student.courses.size()} courses"
+                                       action="#{studentBean.showCourses(student)}"
+                                       styleClass="link-button"
+                                       rendered="#{not empty student.courses}"/>
+                        <h:outputText value="0 courses" rendered="#{empty student.courses}"/>
                     </h:column>
 
                     <!-- In the actions column of the student data table -->
@@ -100,10 +104,23 @@
                         <h:commandButton value="Delete" action="#{studentBean.deleteStudent(student.id)}"
                                          styleClass="button small danger"
                                          onclick="return confirm('Are you sure you want to delete this student?')"/>
-                        <h:commandButton value="Demo OptLock" action="#{studentBean.demonstrateOptimisticLocking(student.id)}"
-                                         styleClass="button small" title="Demonstrate Optimistic Locking"/>
                     </h:column>
                 </h:dataTable>
+                <ui:fragment rendered="#{not empty studentBean.courseViewStudent}">
+                    <div class="modal-overlay">
+                        <div class="modal">
+                            <h3>Enrolled Courses for #{studentBean.courseViewStudent.firstName} #{studentBean.courseViewStudent.lastName}</h3>
+                            <ul>
+                                <ui:repeat value="#{studentBean.courseViewStudent.courses}" var="course">
+                                    <li>
+                                        #{course.courseCode} - #{course.title} (#{course.credits} credits)
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                            <h:commandButton value="Close" action="#{studentBean.setCourseViewStudent(null)}" styleClass="button"/>
+                        </div>
+                    </div>
+                </ui:fragment>
             </h:form>
         </div>
 

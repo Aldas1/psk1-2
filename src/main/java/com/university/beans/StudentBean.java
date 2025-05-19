@@ -26,6 +26,7 @@ public class StudentBean implements Serializable {
     @Inject
     private CourseService courseService;
 
+    private Student courseViewStudent;
     private List<Student> students;
     private Student newStudent;
     private Student selectedStudent;
@@ -200,6 +201,18 @@ public class StudentBean implements Serializable {
 
     public Long getSelectedCourseId() {
         return selectedCourseId;
+    }
+
+    public Student getCourseViewStudent() {
+        return courseViewStudent;
+    }
+
+    public void setCourseViewStudent(Student courseViewStudent) {
+        this.courseViewStudent = courseViewStudent;
+    }
+
+    public void showCourses(Student student) {
+        this.courseViewStudent = student;
     }
 
     public void setSelectedCourseId(Long selectedCourseId) {
