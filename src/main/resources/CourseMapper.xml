@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.university.mybatis.mapper.CourseMapper">
+    <resultMap id="courseResultMap" type="com.university.mybatis.entity.CourseMB">
+        <id property="id" column="id"/>
+        <result property="courseCode" column="course_code"/>
+        <result property="title" column="title"/>
+        <result property="credits" column="credits"/>
+        <result property="facultyId" column="faculty_id"/>
+        <result property="facultyName" column="faculty_name"/>
+    </resultMap>
+
+    <select id="getAllCourses" resultMap="courseResultMap">
+        SELECT c.id, c.course_code, c.title, c.credits, c.faculty_id, f.name as faculty_name
+        FROM course c
+                 LEFT JOIN faculty f ON c.faculty_id = f.id
+    </select>
+
+    <select id="getCourseById" resultMap="courseResultMap" parameterType="long">
+        SELECT c.id, c.course_code, c.title, c.credits, c.faculty_id, f.name as faculty_name
+        FROM course c
+                 LEFT JOIN faculty f ON c.faculty_id = f.id
+        WHERE c.id = #{id}
+    </select>
+
+    <insert id="insertCourse" parameterType="com.university.mybatis.entity.CourseMB" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO course (course_code, title, credits, faculty_id)
+        VALUES (#{courseCode}, #{title}, #{credits}, #{facultyId})
+    </insert>
+
+    <update id="updateCourse" parameterType="com.university.mybatis.entity.CourseMB">
+        UPDATE course
+        SET course_code = #{courseCode}, title = #{title}, credits = #{credits}, faculty_id = #{facultyId}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteCourse" parameterType="long">
+        DELETE FROM course WHERE id = #{id}
+    </delete>
+
+    <select id="getCoursesByFacultyId" resultMap="courseResultMap" parameterType="long">
+        SELECT c.id, c.course_code, c.title, c.credits, c.faculty_id, f.name as faculty_name
+        FROM course c
+                 LEFT JOIN faculty f ON c.faculty_id = f.id
+        WHERE c.faculty_id = #{facultyId}
+    </select>
+</mapper>

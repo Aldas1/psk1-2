@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.university.mybatis.mapper.StudentMapper">
+    <resultMap id="studentResultMap" type="com.university.mybatis.entity.StudentMB">
+        <id property="id" column="id"/>
+        <result property="studentId" column="student_id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="email" column="email"/>
+        <collection property="courses" ofType="com.university.mybatis.entity.CourseMB">
+            <id property="id" column="course_id"/>
+            <result property="courseCode" column="course_code"/>
+            <result property="title" column="course_title"/>
+            <result property="credits" column="course_credits"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAllStudents" resultMap="studentResultMap">
+        SELECT
+            s.id, s.student_id, s.first_name, s.last_name, s.email,
+            c.id as course_id, c.course_code, c.title as course_title, c.credits as course_credits
+        FROM student s
+                 LEFT JOIN student_course sc ON s.id = sc.student_id
+                 LEFT JOIN course c ON sc.course_id = c.id
+    </select>
+
+    <select id="getStudentById" resultMap="studentResultMap" parameterType="long">
+        SELECT
+            s.id, s.student_id, s.first_name, s.last_name, s.email,
+            c.id as course_id, c.course_code, c.title as course_title, c.credits as course_credits
+        FROM student s
+                 LEFT JOIN student_course sc ON s.id = sc.student_id
+                 LEFT JOIN course c ON sc.course_id = c.id
+        WHERE s.id = #{id}
+    </select>
+
+    <insert id="insertStudent" parameterType="com.university.mybatis.entity.StudentMB" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO student (student_id, first_name, last_name, email)
+        VALUES (#{studentId}, #{firstName}, #{lastName}, #{email})
+    </insert>
+
+    <update id="updateStudent" parameterType="com.university.mybatis.entity.StudentMB">
+        UPDATE student
+        SET student_id = #{studentId}, first_name = #{firstName}, last_name = #{lastName}, email = #{email}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteStudent" parameterType="long">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+
+    <insert id="enrollStudentInCourse">
+        INSERT INTO student_course (student_id, course_id)
+        VALUES (#{studentId}, #{courseId})
+    </insert>
+
+    <delete id="removeStudentFromCourse">
+        DELETE FROM student_course
+        WHERE student_id = #{studentId} AND course_id = #{courseId}
+    </delete>
+
+    <select id="getStudentsByCourseId" resultMap="studentResultMap" parameterType="long">
+        SELECT
+            s.id, s.student_id, s.first_name, s.last_name, s.email
+        FROM student s
+                 JOIN student_course sc ON s.id = sc.student_id
+        WHERE sc.course_id = #{courseId}
+    </select>
+</mapper>
