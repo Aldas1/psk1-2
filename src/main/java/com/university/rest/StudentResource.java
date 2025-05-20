@@ -39,7 +39,7 @@ public class StudentResource {
     @POST
     public Response createStudent(Student student) {
         try {
-            student.setId(null); // Ensure we're creating a new record
+            student.setId(null); 
             studentService.saveStudentJpa(student);
             return Response.status(Response.Status.CREATED)
                     .entity(student)
@@ -63,7 +63,7 @@ public class StudentResource {
                         .build();
             }
 
-            // Update the existing student with new values
+            
             student.setId(id);
             studentService.saveStudentJpa(student);
 

@@ -12,7 +12,6 @@ public class EmailNotificationService implements NotificationService {
         logger.info("Sending EMAIL notification to " + recipient);
         logger.info("Subject: " + subject);
         logger.info("Message: " + message);
-        // Implementation would go here
     }
 
     @Override

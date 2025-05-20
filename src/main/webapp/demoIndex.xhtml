@@ -24,31 +24,18 @@
       </div>
 
       <div class="content">
-         <h2>Featured Demonstrations</h2>
-         <p>This application implements various Jakarta EE features. The following pages demonstrate these features in action:</p>
+         <h2>Features Demonstrations</h2>
 
          <div class="demos-grid">
             <div class="demo-card">
                <h3>1. Optimistic Locking</h3>
                <p>Demonstrates OptimisticLockException handling and recovery strategies.</p>
-               <p><strong>Key Points:</strong></p>
-               <ul>
-                  <li>Transaction behavior during OptimisticLockException</li>
-                  <li>EntityManager state after OptimisticLockException</li>
-                  <li>Proper entity recovery and saving</li>
-               </ul>
                <h:link outcome="optimisticLockingDemo" value="View Demo" styleClass="button"/>
             </div>
 
             <div class="demo-card">
                <h3>2. Asynchronous Communication</h3>
                <p>Demonstrates asynchronous method calls and transaction behavior.</p>
-               <p><strong>Key Points:</strong></p>
-               <ul>
-                  <li>Async methods cannot join caller's transaction</li>
-                  <li>Async methods cannot use @RequestScoped EntityManager</li>
-                  <li>Future&lt;T&gt; return type for result handling</li>
-               </ul>
                <h:link outcome="asyncDemo" value="View Demo" styleClass="button"/>
             </div>
 
@@ -67,13 +54,6 @@
 
             <div class="demo-card">
                <h3>4. RESTful Services</h3>
-               <p>Demonstrates REST API implementation with JAX-RS.</p>
-               <p><strong>Key Points:</strong></p>
-               <ul>
-                  <li>GET, POST, PUT, DELETE operations</li>
-                  <li>Proper response handling</li>
-                  <li>JSON serialization/deserialization</li>
-               </ul>
                <h:link outcome="restDemo" value="View Demo" styleClass="button"/>
             </div>
          </div>

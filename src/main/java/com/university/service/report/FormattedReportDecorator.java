@@ -17,10 +17,10 @@ public abstract class FormattedReportDecorator implements ReportGenerator {
 
     @Override
     public String generateReport(String title, List<Map<String, Object>> data) {
-        // Get the basic report from the delegate
+        
         String baseReport = reportGenerator.generateReport(title, data);
 
-        // Add formatting and metadata
+        
         StringBuilder enhancedReport = new StringBuilder();
         enhancedReport.append("*** FORMATTED REPORT ***\n\n");
         enhancedReport.append("Report generated on: ").append(java.time.LocalDateTime.now()).append("\n");

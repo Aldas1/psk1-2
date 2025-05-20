@@ -11,7 +11,7 @@ public class UniversityRestApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
-        // Register REST resources
+        
         classes.add(StudentResource.class);
         return classes;
     }

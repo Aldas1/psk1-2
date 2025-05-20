@@ -18,7 +18,6 @@ public class InterceptorDemoBean implements Serializable {
 
     public String callInterceptedMethod() {
         try {
-            // This method call will be intercepted by LoggingInterceptor
             loggedStudentService.getStudentsWithGradeAverage();
 
             FacesContext.getCurrentInstance().addMessage(null,

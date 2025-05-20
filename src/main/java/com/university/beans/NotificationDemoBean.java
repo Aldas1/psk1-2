@@ -31,7 +31,7 @@ public class NotificationDemoBean implements Serializable {
         return null;
     }
 
-    // Getters and setters
+    
     public String getRecipient() {
         return recipient;
     }

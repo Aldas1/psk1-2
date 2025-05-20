@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class AsyncCalculationService {
     private static final Logger logger = Logger.getLogger(AsyncCalculationService.class.getName());
 
-    // Cannot use request-scoped EntityManager in async methods
+    
     @PersistenceContext
     private EntityManager em;
 
@@ -22,10 +22,10 @@ public class AsyncCalculationService {
         logger.info("Starting long calculation for input: " + input);
 
         try {
-            // Simulate a long-running calculation
+            
             Thread.sleep(5000);
 
-            // Example calculation result
+            
             String result = "Calculated result for " + input + ": " + (System.currentTimeMillis() % 1000);
 
             logger.info("Calculation completed: " + result);
@@ -36,19 +36,14 @@ public class AsyncCalculationService {
         }
     }
 
-    /**
-     * Note: This method cannot join the caller's transaction because it's async
-     * Async methods must use their own transaction scope
-     */
     @Asynchronous
     public Future<Integer> countStudents() {
         logger.info("Starting async counting of students");
 
         try {
-            // Simulate delay
+            
             Thread.sleep(3000);
 
-            // This will use a new transaction, not the caller's transaction
             int count = em.createQuery("SELECT COUNT(s) FROM Student s", Long.class)
                     .getSingleResult().intValue();
 

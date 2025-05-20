@@ -30,7 +30,7 @@ public class CourseBean implements Serializable {
     private Course newCourse;
     private Course selectedCourse;
     private Long selectedFacultyId;
-    private String persistenceType = "jpa"; // Default to JPA
+    private String persistenceType = "jpa"; 
 
     @PostConstruct
     public void init() {
@@ -40,7 +40,7 @@ public class CourseBean implements Serializable {
             selectedCourse = new Course();
         } catch (Exception e) {
             handleException("Error initializing courses", e);
-            // Initialize with empty lists to prevent further errors
+            
             courses = new ArrayList<>();
             newCourse = new Course();
             selectedCourse = new Course();
@@ -50,13 +50,13 @@ public class CourseBean implements Serializable {
     @Transactional
     public String saveCourse() {
         try {
-            // If a faculty is selected, set it for the new course
+            
             if (selectedFacultyId != null) {
                 Faculty faculty = facultyService.getFacultyByIdJpa(selectedFacultyId);
                 newCourse.setFaculty(faculty);
             }
             courseService.saveCourseJpa(newCourse);
-            init(); // Refresh the list
+            init(); 
             return "courses?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error saving course", e);
@@ -68,7 +68,7 @@ public class CourseBean implements Serializable {
     public String deleteCourse(Long id) {
         try {
             courseService.deleteCourseJpa(id);
-            init(); // Refresh the list
+            init(); 
             return "courses?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error deleting course", e);
@@ -79,9 +79,9 @@ public class CourseBean implements Serializable {
     @Transactional
     public String editCourse(Course course) {
         try {
-            // Load the fresh course with all associations
+            
             this.selectedCourse = courseService.getCourseByIdJpa(course.getId());
-            // Set the selected faculty ID
+            
             if (this.selectedCourse.getFaculty() != null) {
                 this.selectedFacultyId = this.selectedCourse.getFaculty().getId();
             }
@@ -95,7 +95,7 @@ public class CourseBean implements Serializable {
     @Transactional
     public String updateCourse() {
         try {
-            // If a faculty is selected, set it for the course
+            
             if (selectedFacultyId != null) {
                 Faculty faculty = facultyService.getFacultyByIdJpa(selectedFacultyId);
                 selectedCourse.setFaculty(faculty);
@@ -125,7 +125,7 @@ public class CourseBean implements Serializable {
         e.printStackTrace();
     }
 
-    // Getters and setters
+    
     public List<Course> getCourses() {
         return courses;
     }

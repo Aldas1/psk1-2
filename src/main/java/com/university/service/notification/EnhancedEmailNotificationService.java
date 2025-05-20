@@ -15,7 +15,7 @@ public class EnhancedEmailNotificationService extends EmailNotificationService {
         logger.info("Subject: " + subject);
         logger.info("Message: " + message);
         logger.info("Adding delivery tracking and read receipts");
-        // Enhanced implementation would go here
+        
     }
 
     @Override

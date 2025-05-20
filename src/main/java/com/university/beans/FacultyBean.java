@@ -24,7 +24,7 @@ public class FacultyBean implements Serializable {
     private List<Faculty> faculties;
     private Faculty newFaculty;
     private Faculty selectedFaculty;
-    private String persistenceType = "jpa"; // Default to JPA
+    private String persistenceType = "jpa"; 
 
     @PostConstruct
     public void init() {
@@ -34,7 +34,7 @@ public class FacultyBean implements Serializable {
             selectedFaculty = new Faculty();
         } catch (Exception e) {
             handleException("Error initializing faculties", e);
-            // Initialize with empty lists to prevent further errors
+            
             faculties = new ArrayList<>();
             newFaculty = new Faculty();
             selectedFaculty = new Faculty();
@@ -45,7 +45,7 @@ public class FacultyBean implements Serializable {
     public String saveFaculty() {
         try {
             facultyService.saveFacultyJpa(newFaculty);
-            init(); // Refresh the list
+            init(); 
             return "faculties?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error saving faculty", e);
@@ -57,7 +57,7 @@ public class FacultyBean implements Serializable {
     public String deleteFaculty(Long id) {
         try {
             facultyService.deleteFacultyJpa(id);
-            init(); // Refresh the list
+            init(); 
             return "faculties?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error deleting faculty", e);
@@ -68,7 +68,7 @@ public class FacultyBean implements Serializable {
     @Transactional
     public String editFaculty(Faculty faculty) {
         try {
-            // Load the fresh faculty with all associations
+            
             this.selectedFaculty = facultyService.getFacultyByIdJpa(faculty.getId());
             return "editFaculty?faces-redirect=true";
         } catch (Exception e) {
@@ -95,7 +95,6 @@ public class FacultyBean implements Serializable {
         e.printStackTrace();
     }
 
-    // Getters and setters
     public List<Faculty> getFaculties() {
         return faculties;
     }

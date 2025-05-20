@@ -25,11 +25,11 @@ public class DataInitializer {
     public void init() {
         try {
             if (!initialized) {
-                // Check if tables already exist
+                
                 if (!tablesExist()) {
                     logger.info("Initializing database schema and test data...");
 
-                    // Use native SQL to create tables and insert data
+                    
                     executeScript();
 
                     initialized = true;
@@ -45,11 +45,11 @@ public class DataInitializer {
 
     private boolean tablesExist() {
         try {
-            // Try to query a table to see if it exists
+            
             em.createNativeQuery("SELECT 1 FROM faculty LIMIT 1").getResultList();
             return true;
         } catch (Exception e) {
-            // Table doesn't exist
+            
             return false;
         }
     }
@@ -57,13 +57,13 @@ public class DataInitializer {
     @Transactional
     private void executeScript() {
         try {
-            // First, drop tables if they exist (in correct order)
+            
             em.createNativeQuery("DROP TABLE IF EXISTS student_course CASCADE").executeUpdate();
             em.createNativeQuery("DROP TABLE IF EXISTS student CASCADE").executeUpdate();
             em.createNativeQuery("DROP TABLE IF EXISTS course CASCADE").executeUpdate();
             em.createNativeQuery("DROP TABLE IF EXISTS faculty CASCADE").executeUpdate();
 
-            // Create tables
+            
             em.createNativeQuery(
                     "CREATE TABLE faculty (" +
                             "    id SERIAL PRIMARY KEY," +
@@ -103,7 +103,7 @@ public class DataInitializer {
                             ")"
             ).executeUpdate();
 
-            // Insert sample data
+            
             em.createNativeQuery(
                     "INSERT INTO faculty (name, department, version) VALUES " +
                             "('Faculty of Science', 'Computer Science', 0)," +

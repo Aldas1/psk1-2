@@ -84,12 +84,6 @@
             <div class="info-box">
                 <h3>How Optimistic Locking Works</h3>
                 <p>This demonstration shows how JPA's optimistic locking mechanism works:</p>
-                <ol>
-                    <li>Each entity has a version field that is automatically incremented when the entity is updated.</li>
-                    <li>When updating an entity, JPA checks if the version number matches what's in the database.</li>
-                    <li>If the version numbers don't match (meaning someone else updated the record), an OptimisticLockException is thrown.</li>
-                    <li>The proper way to recover is to get a fresh copy of the entity and reapply your changes.</li>
-                </ol>
                 <p><strong>Follow the steps below in order to see optimistic locking in action.</strong></p>
             </div>
 

@@ -43,9 +43,6 @@ public class OptLockDemoBean implements Serializable {
         currentStep = 0;
     }
 
-    /**
-     * Step 1: Select a student and prepare for the demo
-     */
     public String selectStudent(Long id) {
         try {
             reset();
@@ -90,9 +87,6 @@ public class OptLockDemoBean implements Serializable {
         }
     }
 
-    /**
-     * Step 2: Normal update
-     */
     public String runStep2() {
         if (currentStep != 1) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -102,12 +96,12 @@ public class OptLockDemoBean implements Serializable {
         }
 
         try {
-            // Normal update
+            
             Student updated = demoService.updateStudentFirstTime(
                     originalStudent,
                     originalStudent.getFirstName() + " [Updated]");
 
-            // Record results
+            
             results += "STEP 2: First update completed\n";
             results += "Updated name: " + updated.getFirstName() + "\n";
             results += "New version: " + updated.getVersion() + "\n";
@@ -115,7 +109,7 @@ public class OptLockDemoBean implements Serializable {
 
             currentStep = 2;
 
-            // Refresh the students list
+            
             studentBean.init();
 
             FacesContext.getCurrentInstance().addMessage(null,
@@ -132,9 +126,6 @@ public class OptLockDemoBean implements Serializable {
         }
     }
 
-    /**
-     * Step 3: Force direct DB update
-     */
     public String runStep3() {
         if (currentStep != 2) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -144,7 +135,7 @@ public class OptLockDemoBean implements Serializable {
         }
 
         try {
-            // Force update directly in the database
+            
             boolean updated = demoService.forceDirectDatabaseUpdate(
                     selectedStudentId,
                     " [Modified Directly]");
@@ -166,7 +157,7 @@ public class OptLockDemoBean implements Serializable {
 
             currentStep = 3;
 
-            // Refresh the students list
+            
             studentBean.init();
 
             FacesContext.getCurrentInstance().addMessage(null,
@@ -183,9 +174,6 @@ public class OptLockDemoBean implements Serializable {
         }
     }
 
-    /**
-     * Step 4: Try to update with stale version
-     */
     public String runStep4() {
         if (currentStep != 3) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -195,7 +183,7 @@ public class OptLockDemoBean implements Serializable {
         }
 
         try {
-            // Try to update with stale version
+            
             String result = demoService.tryUpdateWithStaleVersion(
                     originalStudent,
                     originalStudent.getFirstName() + " [Should Fail]");
@@ -207,7 +195,7 @@ public class OptLockDemoBean implements Serializable {
 
             currentStep = 4;
 
-            // Refresh the students list
+            
             studentBean.init();
 
             if (result.contains("OPTIMISTIC LOCK EXCEPTION")) {
@@ -230,9 +218,6 @@ public class OptLockDemoBean implements Serializable {
         }
     }
 
-    /**
-     * Step 5: Demonstrate recovery
-     */
     public String runStep5() {
         if (currentStep != 4) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -242,7 +227,7 @@ public class OptLockDemoBean implements Serializable {
         }
 
         try {
-            // Demonstrate recovery
+            
             String result = demoService.recoverFromOptimisticLock(
                     selectedStudentId,
                     originalStudent.getFirstName() + " [Recovered]");
@@ -253,7 +238,6 @@ public class OptLockDemoBean implements Serializable {
 
             currentStep = 5;
 
-            // Refresh the students list
             studentBean.init();
 
             FacesContext.getCurrentInstance().addMessage(null,
@@ -272,19 +256,19 @@ public class OptLockDemoBean implements Serializable {
 
     public String startOver() {
         try {
-            // Reset the selected student name if there was one
+            
             if (selectedStudentId != null) {
                 demoService.resetStudentName(selectedStudentId);
             } else {
-                // If no student was selected, reset all student names
-                // This helps clean up from any incomplete demos
+                
+                
                 demoService.resetAllStudentNames();
             }
 
-            // Reset the bean state
+            
             reset();
 
-            // Refresh the student list
+            
             studentBean.init();
 
             FacesContext.getCurrentInstance().addMessage(null,

@@ -30,7 +30,7 @@ public class StudentService {
     @Inject
     private StudentMyBatisDao studentMyBatisDao;
 
-    // JPA methods
+    
     public List<Student> getAllStudentsJpa() {
         return studentJpaDao.getAllStudents();
     }
@@ -69,11 +69,11 @@ public class StudentService {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void simulateConcurrentModification(Long studentId) {
         try {
-            // Get the student in a new transaction
+            
             Student student = em.find(Student.class, studentId);
             if (student != null) {
                 student.setFirstName(student.getFirstName() + " - Modified by concurrent transaction");
-                em.flush(); // This will commit the change
+                em.flush(); 
                 logger.info("Successfully modified student in concurrent transaction: " + student.getFirstName());
             }
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class StudentService {
         }
     }
 
-    // MyBatis methods
+    
     public List<StudentMB> getAllStudentsMyBatis() {
         return studentMyBatisDao.getAllStudents();
     }

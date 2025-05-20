@@ -43,10 +43,10 @@ public class StudentJpaDao {
             } else {
                 em.merge(student);
             }
-            em.flush(); // Force any OptimisticLockException to be thrown now
+            em.flush(); 
         } catch (OptimisticLockException e) {
             logger.warning("OptimisticLockException caught in saveStudent: " + e.getMessage());
-            // Let the service handle the exception
+            
             throw e;
         }
     }

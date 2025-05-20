@@ -19,7 +19,7 @@ public class FacultyService {
     @Inject
     private FacultyMyBatisDao facultyMyBatisDao;
 
-    // JPA methods
+    
     public List<Faculty> getAllFacultiesJpa() {
         return facultyJpaDao.getAllFaculties();
     }
@@ -38,7 +38,7 @@ public class FacultyService {
         facultyJpaDao.deleteFaculty(id);
     }
 
-    // MyBatis methods
+    
     public List<FacultyMB> getAllFacultiesMyBatis() {
         return facultyMyBatisDao.getAllFaculties();
     }

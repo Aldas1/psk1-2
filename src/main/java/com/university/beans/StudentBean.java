@@ -31,7 +31,7 @@ public class StudentBean implements Serializable {
     private Student newStudent;
     private Student selectedStudent;
     private Long selectedCourseId;
-    private String persistenceType = "jpa"; // Default to JPA
+    private String persistenceType = "jpa"; 
 
     @PostConstruct
     public void init() {
@@ -41,7 +41,7 @@ public class StudentBean implements Serializable {
             selectedStudent = new Student();
         } catch (Exception e) {
             handleException("Error initializing data", e);
-            // Initialize with empty lists to prevent further errors
+            
             students = new ArrayList<>();
             newStudent = new Student();
             selectedStudent = new Student();
@@ -52,7 +52,7 @@ public class StudentBean implements Serializable {
     public String saveStudent() {
         try {
             studentService.saveStudentJpa(newStudent);
-            init(); // Refresh the list
+            init(); 
             return "students?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error saving student", e);
@@ -64,7 +64,7 @@ public class StudentBean implements Serializable {
     public String deleteStudent(Long id) {
         try {
             studentService.deleteStudentJpa(id);
-            init(); // Refresh the list
+            init(); 
             return "students?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error deleting student", e);
@@ -75,7 +75,7 @@ public class StudentBean implements Serializable {
     @Transactional
     public String editStudent(Student student) {
         try {
-            // Reload the student to ensure all associations are loaded
+            
             this.selectedStudent = studentService.getStudentByIdJpa(student.getId());
             return "editStudent?faces-redirect=true";
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class StudentBean implements Serializable {
         try {
             if (selectedStudent != null && selectedCourseId != null) {
                 studentService.enrollStudentInCourseJpa(selectedStudent.getId(), selectedCourseId);
-                // Refresh the selected student to show updated courses
+                
                 selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -118,7 +118,7 @@ public class StudentBean implements Serializable {
         try {
             if (selectedStudent != null) {
                 studentService.removeStudentFromCourseJpa(selectedStudent.getId(), courseId);
-                // Refresh the selected student to show updated courses
+                
                 selectedStudent = studentService.getStudentByIdJpa(selectedStudent.getId());
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -134,7 +134,7 @@ public class StudentBean implements Serializable {
     @Transactional
     public List<Course> getAvailableCourses() {
         try {
-            // Get all courses that the student is not already enrolled in
+            
             List<Course> allCourses = courseService.getAllCoursesJpa();
             if (selectedStudent != null && selectedStudent.getCourses() != null) {
                 List<Course> availableCourses = new ArrayList<>(allCourses);
@@ -151,14 +151,14 @@ public class StudentBean implements Serializable {
     @Transactional
     public String demonstrateOptimisticLocking(Long id) {
         try {
-            // This will now be implemented more safely
+            
             Student student = studentService.getStudentByIdJpa(id);
-            // Perform operations that might cause OptimisticLockException
+            
 
-            // For demo purposes, we'll simulate a concurrent modification
+            
             studentService.simulateConcurrentModification(id);
 
-            // Now try to update the same student
+            
             student.setFirstName(student.getFirstName() + " - Updated");
             studentService.saveStudentJpa(student);
 
@@ -178,7 +178,7 @@ public class StudentBean implements Serializable {
         e.printStackTrace();
     }
 
-    // Getters and setters
+    
     public List<Student> getStudents() {
         return students;
     }

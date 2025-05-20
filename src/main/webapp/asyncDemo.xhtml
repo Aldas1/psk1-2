@@ -66,16 +66,6 @@
                     </div>
                 </h:form>
             </div>
-
-            <div class="info-box">
-                <h3>Key Points About Asynchronous EJBs</h3>
-                <ul>
-                    <li>Asynchronous methods cannot join the caller's transaction - they must use their own transaction scope.</li>
-                    <li>They cannot use @RequestScoped EntityManager because the request might end before the async method completes.</li>
-                    <li>They must use container-managed EntityManager with application scope or manually handle EntityManager lifecycle.</li>
-                    <li>Async methods return either void or Future&lt;T&gt; to allow checking completion status and retrieving results.</li>
-                </ul>
-            </div>
         </div>
 
         <div class="footer">

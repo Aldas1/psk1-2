@@ -2,9 +2,6 @@ package com.university.mybatis.entity;
 
 import lombok.Data;
 
-/**
- * MyBatis Course entity
- */
 @Data
 public class CourseMB {
     private Long id;
@@ -12,5 +9,5 @@ public class CourseMB {
     private String title;
     private Integer credits;
     private Long facultyId;
-    private String facultyName; // For joining with faculty table
+    private String facultyName; 
 }

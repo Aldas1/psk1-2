@@ -1,10 +1,8 @@
--- First drop tables in correct order if they exist
 DROP TABLE IF EXISTS student_course CASCADE;
 DROP TABLE IF EXISTS student CASCADE;
 DROP TABLE IF EXISTS course CASCADE;
 DROP TABLE IF EXISTS faculty CASCADE;
 
--- Create tables in correct order
 CREATE TABLE faculty (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -21,10 +19,8 @@ CREATE TABLE course (
     version BIGINT DEFAULT 0
 );
 
--- Update student table to have version column if not exists
 ALTER TABLE student ADD COLUMN IF NOT EXISTS version BIGINT DEFAULT 0;
 
--- If you're recreating the schema, make sure version is included
 CREATE TABLE IF NOT EXISTS student (
     id SERIAL PRIMARY KEY,
     student_id VARCHAR(20) NOT NULL UNIQUE,
@@ -40,7 +36,6 @@ CREATE TABLE student_course (
     PRIMARY KEY (student_id, course_id)
 );
 
--- Insert data
 INSERT INTO faculty (name, department, version) VALUES
     ('Faculty of Science', 'Computer Science', 0),
     ('Faculty of Arts', 'Music', 0),

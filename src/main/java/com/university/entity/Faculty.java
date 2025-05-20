@@ -30,11 +30,9 @@ public class Faculty implements Serializable {
     @Column(name = "version")
     private Long version;
 
-    // One-to-many relationship with courses
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Course> courses = new HashSet<>();
 
-    // For displaying in UI
     @Override
     public String toString() {
         return name + " (" + department + ")";

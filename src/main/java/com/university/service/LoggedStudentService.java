@@ -10,7 +10,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
-@Logged // Apply the interceptor at class level
+@Logged 
 public class LoggedStudentService {
 
     @PersistenceContext
@@ -18,7 +18,6 @@ public class LoggedStudentService {
 
     @Transactional
     public List<Student> getStudentsWithGradeAverage() {
-        // This method will be logged by the interceptor
         return em.createQuery("SELECT s FROM Student s", Student.class)
                 .getResultList();
     }

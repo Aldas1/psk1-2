@@ -36,7 +36,6 @@ public class AsyncDemoBean implements Serializable {
         calculationInProgress = true;
         calculationResult = "Calculation in progress...";
 
-        // Start the async calculation
         futureResult = asyncCalculationService.performLongCalculation(calculationInput);
 
         FacesContext.getCurrentInstance().addMessage(null,
@@ -98,7 +97,6 @@ public class AsyncDemoBean implements Serializable {
         return null;
     }
 
-    // Getters and setters
     public String getCalculationInput() {
         return calculationInput;
     }

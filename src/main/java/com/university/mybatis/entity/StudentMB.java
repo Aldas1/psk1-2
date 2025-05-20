@@ -4,9 +4,6 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * MyBatis Student entity
- */
 @Data
 public class StudentMB {
     private Long id;
@@ -14,5 +11,5 @@ public class StudentMB {
     private String firstName;
     private String lastName;
     private String email;
-    private List<CourseMB> courses; // For joining with courses
+    private List<CourseMB> courses; 
 }
