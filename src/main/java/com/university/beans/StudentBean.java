@@ -13,12 +13,16 @@ import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @Named
 @RequestScoped
 public class StudentBean implements Serializable {
+    private static final Logger logger = Logger.getLogger(StudentBean.class.getName());
 
     @Inject
     private StudentService studentService;
@@ -31,28 +35,56 @@ public class StudentBean implements Serializable {
     private Student newStudent;
     private Student selectedStudent;
     private Long selectedCourseId;
-    private String persistenceType = "jpa"; 
+    private String persistenceType = "jpa";
 
+    // For the multi-select course checkboxes
+    private List<Long> selectedCourseIds;
     @PostConstruct
     public void init() {
         try {
             students = studentService.getAllStudentsJpa();
-            newStudent = new Student();
-            selectedStudent = new Student();
+            newStudent = createNewStudent();
+            selectedStudent = createNewStudent();
+            selectedCourseIds = new ArrayList<>();
         } catch (Exception e) {
             handleException("Error initializing data", e);
-            
+
             students = new ArrayList<>();
-            newStudent = new Student();
-            selectedStudent = new Student();
+            newStudent = createNewStudent();
+            selectedStudent = createNewStudent();
+            selectedCourseIds = new ArrayList<>();
         }
     }
 
     @Transactional
     public String saveStudent() {
         try {
+            logger.info("Attempting to save new student: " + newStudent.getFirstName() + " " + newStudent.getLastName());
+            logger.info("Selected course IDs: " + selectedCourseIds);
+
+            // Make sure the version is null for new entities
+            newStudent.setVersion(null);
+
+            // First save the student without any courses
             studentService.saveStudentJpa(newStudent);
-            init(); 
+
+            // Now add courses if selected
+            if (selectedCourseIds != null && !selectedCourseIds.isEmpty()) {
+                for (Long courseId : selectedCourseIds) {
+                    studentService.enrollStudentInCourseJpa(newStudent.getId(), courseId);
+                }
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Success", "Student created successfully with " + selectedCourseIds.size() + " course enrollments"));
+            } else {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO,
+                                "Success", "Student created successfully"));
+            }
+
+            // Reset the form and refresh data
+            init();
             return "students?faces-redirect=true";
         } catch (Exception e) {
             handleException("Error saving student", e);
@@ -178,7 +210,15 @@ public class StudentBean implements Serializable {
         e.printStackTrace();
     }
 
-    
+    public List<Course> getAllCoursesForSelection() {
+        try {
+            return courseService.getAllCoursesJpa();
+        } catch (Exception e) {
+            handleException("Error loading courses for selection", e);
+            return new ArrayList<>();
+        }
+    }
+
     public List<Student> getStudents() {
         return students;
     }
@@ -189,6 +229,22 @@ public class StudentBean implements Serializable {
 
     public void setNewStudent(Student newStudent) {
         this.newStudent = newStudent;
+    }
+
+    private Student createNewStudent() {
+        Student student = new Student();
+        student.setId(null);
+        student.setVersion(null);
+        student.setCourses(new HashSet<>());
+        return student;
+    }
+
+    public List<Long> getSelectedCourseIds() {
+        return selectedCourseIds;
+    }
+
+    public void setSelectedCourseIds(List<Long> selectedCourseIds) {
+        this.selectedCourseIds = selectedCourseIds;
     }
 
     public Student getSelectedStudent() {

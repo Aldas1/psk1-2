@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.Set;
+import java.util.HashSet;
 
 @ApplicationScoped
 public class StudentJpaDao {
@@ -39,14 +41,35 @@ public class StudentJpaDao {
     public void saveStudent(Student student) {
         try {
             if (student.getId() == null) {
-                em.persist(student);
+                // For new entities, explicitly set version to null
+                student.setVersion(null);
+
+                // Clear any existing associations that might cause problems
+                if (student.getCourses() != null && !student.getCourses().isEmpty()) {
+                    Set<Course> courses = new HashSet<>(student.getCourses());
+                    student.setCourses(new HashSet<>());
+
+                    // First persist the student
+                    em.persist(student);
+                    em.flush();
+
+                    // Now re-add the courses
+                    for (Course course : courses) {
+                        Course managedCourse = em.find(Course.class, course.getId());
+                        student.addCourse(managedCourse);
+                    }
+                } else {
+                    em.persist(student);
+                }
             } else {
                 em.merge(student);
             }
-            em.flush(); 
+            em.flush();
         } catch (OptimisticLockException e) {
             logger.warning("OptimisticLockException caught in saveStudent: " + e.getMessage());
-            
+            throw e;
+        } catch (Exception e) {
+            logger.severe("Error in saveStudent: " + e.getMessage());
             throw e;
         }
     }
