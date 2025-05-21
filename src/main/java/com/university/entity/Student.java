@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Student implements Serializable {
+public class    Student implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
