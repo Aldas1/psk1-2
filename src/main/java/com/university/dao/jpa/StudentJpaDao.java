@@ -4,13 +4,16 @@ import com.university.entity.Course;
 import com.university.entity.Student;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class StudentJpaDao {
+    private static final Logger logger = Logger.getLogger(StudentJpaDao.class.getName());
 
     @PersistenceContext
     private EntityManager em;
@@ -20,19 +23,31 @@ public class StudentJpaDao {
     }
 
     public Student getStudentById(Long id) {
-        return em.createQuery(
-                    "SELECT s FROM Student s LEFT JOIN FETCH s.courses WHERE s.id = :id",
-                    Student.class)
-            .setParameter("id", id)
-            .getSingleResult();
+        try {
+            return em.createQuery(
+                            "SELECT s FROM Student s LEFT JOIN FETCH s.courses WHERE s.id = :id",
+                            Student.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (Exception e) {
+            logger.warning("Error fetching student by id " + id + ": " + e.getMessage());
+            return null;
+        }
     }
 
     @Transactional
     public void saveStudent(Student student) {
-        if (student.getId() == null) {
-            em.persist(student);
-        } else {
-            em.merge(student);
+        try {
+            if (student.getId() == null) {
+                em.persist(student);
+            } else {
+                em.merge(student);
+            }
+            em.flush(); 
+        } catch (OptimisticLockException e) {
+            logger.warning("OptimisticLockException caught in saveStudent: " + e.getMessage());
+            
+            throw e;
         }
     }
 

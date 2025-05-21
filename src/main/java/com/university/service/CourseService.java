@@ -19,7 +19,7 @@ public class CourseService {
     @Inject
     private CourseMyBatisDao courseMyBatisDao;
 
-    // JPA methods
+    
     public List<Course> getAllCoursesJpa() {
         return courseJpaDao.getAllCourses();
     }
@@ -42,7 +42,7 @@ public class CourseService {
         return courseJpaDao.getCoursesByFacultyId(facultyId);
     }
 
-    // MyBatis methods
+    
     public List<CourseMB> getAllCoursesMyBatis() {
         return courseMyBatisDao.getAllCourses();
     }
