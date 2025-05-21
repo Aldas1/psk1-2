@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public class    Student implements Serializable {
+public class Student implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -36,8 +36,8 @@ public class    Student implements Serializable {
 
     @Version
     @Column(name = "version")
-    private Long version = 0L;
-    
+    private Long version;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "student_course",

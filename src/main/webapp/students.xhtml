@@ -55,6 +55,18 @@
                     </div>
 
                     <div class="form-row">
+                        <h:outputLabel value="Select Courses:" for="selectedCourses"/>
+                        <div class="checkbox-container">
+                            <h:selectManyCheckbox id="selectedCourses" value="#{studentBean.selectedCourseIds}"
+                                                  layout="pageDirection" styleClass="course-checkbox-list">
+                                <f:selectItems value="#{studentBean.allCoursesForSelection}" var="course"
+                                               itemLabel="#{course.courseCode} - #{course.title} (#{course.credits} credits)"
+                                               itemValue="#{course.id}" />
+                            </h:selectManyCheckbox>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <h:commandButton value="Save Student" action="#{studentBean.saveStudent()}" styleClass="button"/>
                     </div>
                 </div>

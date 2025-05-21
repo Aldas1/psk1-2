@@ -288,3 +288,23 @@ h2 {
     margin-top: 0;
     color: #2c3e50;
 }
+
+.course-checkbox-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.course-checkbox-list td {
+    padding: 5px 10px;
+}
+
+.checkbox-container {
+    flex: 1;
+    max-width: 500px;
+}
